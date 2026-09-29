@@ -91,7 +91,7 @@ export function ProductTable({ products, emptyTitle, emptyHint, onEdit, onRemove
 
   if (products.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-border px-6 py-16 text-center">
+      <div className="rounded-2xl border border-dashed border-primary/30 bg-card px-6 py-16 text-center shadow-sm">
         <p className="font-medium">{emptyTitle}</p>
         <p className="mt-1 text-sm text-muted-foreground">{emptyHint}</p>
       </div>
@@ -99,13 +99,13 @@ export function ProductTable({ products, emptyTitle, emptyHint, onEdit, onRemove
   }
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-border">
+    <div className="overflow-x-auto rounded-2xl border border-border bg-card shadow-sm">
       <table className="w-full min-w-[40rem] border-collapse text-sm">
-        <thead className="bg-muted/60 text-left">
+        <thead className="bg-secondary text-left text-secondary-foreground">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th key={header.id} className="px-4 py-3 font-medium text-muted-foreground">
+                <th key={header.id} className="px-4 py-3 font-medium">
                   {header.isPlaceholder ? null : (
                     <button
                       type="button"

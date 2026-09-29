@@ -59,27 +59,43 @@ export type Product = {
 
 const KEY = "tenderos.session";
 
+let cachedRaw: string | null | undefined;
+let cachedSession: Session | null = null;
+
 export function readSession(): Session | null {
   if (typeof window === "undefined") {
     return null;
   }
 
   const raw = localStorage.getItem(KEY);
+  if (raw === cachedRaw) {
+    return cachedSession;
+  }
+
+  cachedRaw = raw;
   if (!raw) {
-    return null;
+    cachedSession = null;
+    return cachedSession;
   }
 
   try {
-    return JSON.parse(raw) as Session;
+    cachedSession = JSON.parse(raw) as Session;
   } catch {
-    return null;
+    cachedSession = null;
   }
+
+  return cachedSession;
 }
 
 export function saveSession(session: Session) {
-  localStorage.setItem(KEY, JSON.stringify(session));
+  const raw = JSON.stringify(session);
+  localStorage.setItem(KEY, raw);
+  cachedRaw = raw;
+  cachedSession = session;
 }
 
 export function clearSession() {
   localStorage.removeItem(KEY);
+  cachedRaw = null;
+  cachedSession = null;
 }

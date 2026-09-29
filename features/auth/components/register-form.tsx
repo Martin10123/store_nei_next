@@ -122,7 +122,7 @@ export function RegisterForm() {
                   aria-pressed={selected}
                   onClick={() => setPresetId(String(preset.id))}
                   className={`rounded-xl border px-3 py-3 text-left text-sm transition-colors ${
-                    selected ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background hover:bg-muted"
+                    selected ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card hover:bg-secondary"
                   }`}
                 >
                   <span className="block font-medium">{labels[preset.name] ?? preset.name}</span>
