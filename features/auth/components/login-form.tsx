@@ -28,7 +28,7 @@ export function LoginForm() {
         body: JSON.stringify({ email, password }),
       });
       saveSession(session);
-      router.push("/products");
+      router.push("/dashboard");
     } catch (caught) {
       setError(errorMessage(caught));
     } finally {

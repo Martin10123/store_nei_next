@@ -25,6 +25,7 @@ type DailyClose = {
   total_cost: string;
   total_credit: string;
   top_product: { id: number; name: string } | null;
+  ai_summary: string | null;
 };
 
 function todayInBogota() {
@@ -125,7 +126,10 @@ export function DailyCloseScreen() {
             ) : (
               closes.map((close) => (
                 <tr key={close.id} className="border-t border-border">
-                  <td className="px-4 py-3">{String(close.closed_on).slice(0, 10)}</td>
+                  <td className="px-4 py-3">
+                    <div>{String(close.closed_on).slice(0, 10)}</div>
+                    {close.ai_summary ? <p className="mt-1 max-w-md text-xs text-muted-foreground">{close.ai_summary}</p> : null}
+                  </td>
                   <td className="px-4 py-3">{money.format(Number(close.total_sold))}</td>
                   <td className="px-4 py-3">{money.format(Number(close.total_credit))}</td>
                   <td className="px-4 py-3">{close.top_product?.name ?? "—"}</td>

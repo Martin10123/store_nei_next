@@ -4,6 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
 import { Field } from "@/components/field";
 import { Button } from "@/components/ui/button";
+import { DateField } from "@/components/ui/date-field";
 import { SelectField } from "@/components/ui/select-field";
 import { api, errorMessage } from "@/lib/api";
 import { money } from "@/lib/money";
@@ -49,6 +50,7 @@ export function SalesScreen() {
   const [lines, setLines] = useState<{ product_id: number; name: string; quantity: number }[]>([]);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cash");
   const [customerId, setCustomerId] = useState("");
+  const [dueOn, setDueOn] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const selectedProduct = productId || (products[0] ? String(products[0].id) : "");
@@ -87,6 +89,7 @@ export function SalesScreen() {
           body: JSON.stringify({
             payment_method: paymentMethod,
             credit_customer_id: paymentMethod === "credit" ? Number(customerId) : null,
+            due_on: paymentMethod === "credit" && dueOn ? dueOn : null,
             lines: lines.map((line) => ({ product_id: line.product_id, quantity: line.quantity })),
           }),
         },
@@ -153,6 +156,7 @@ export function SalesScreen() {
               options={customers.map((customer) => ({ value: String(customer.id), label: customer.full_name }))}
             />
           ) : null}
+          {paymentMethod === "credit" ? <DateField label="Vence el" value={dueOn} onChange={setDueOn} /> : null}
         </div>
         {error || productsQuery.error || salesQuery.error ? (
           <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{error ?? errorMessage(productsQuery.error ?? salesQuery.error)}</p>

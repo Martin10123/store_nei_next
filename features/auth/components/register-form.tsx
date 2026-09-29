@@ -59,7 +59,7 @@ export function RegisterForm() {
         }),
       });
       saveSession(session);
-      router.push("/products");
+      router.push("/dashboard");
     } catch (caught) {
       setError(errorMessage(caught));
     } finally {

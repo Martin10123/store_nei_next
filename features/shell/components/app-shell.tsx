@@ -4,24 +4,40 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { CalendarDays, Package, ShoppingBag, Wallet, ArrowLeftRight } from "lucide-react";
+import { Bike, CalendarDays, LayoutDashboard, MessageCircle, Package, ShoppingBag, Store, Truck, Wallet, ArrowLeftRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SelectField } from "@/components/ui/select-field";
 import { api } from "@/lib/api";
+import { queryKeys, useStoreQuery } from "@/lib/queries";
 import { clearSession, readSession, type Session } from "@/lib/session";
 
 const links = [
+  { href: "/dashboard", label: "Inicio", icon: LayoutDashboard },
   { href: "/products", label: "Inventario", icon: Package },
   { href: "/movements", label: "Movimientos", icon: ArrowLeftRight },
   { href: "/sales", label: "Ventas", icon: ShoppingBag },
   { href: "/credits", label: "Fiados", icon: Wallet },
   { href: "/daily-close", label: "Cierre", icon: CalendarDays },
+  { href: "/suppliers", label: "Proveedores", icon: Truck },
+  { href: "/orders", label: "Pedidos", icon: Bike },
+  { href: "/whatsapp", label: "WhatsApp", icon: MessageCircle },
+  { href: "/branches", label: "Sucursales", icon: Store },
 ];
+
+type Branch = {
+  id: number;
+  name: string;
+  is_active: boolean;
+};
 
 export function AppShell({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const queryClient = useQueryClient();
   const [session, setSession] = useState<Session | null>(null);
+  const [branchId, setBranchId] = useState("");
+  const branchesQuery = useStoreQuery<Branch[]>(queryKeys.branches, "/branches");
+  const branches = (branchesQuery.data ?? []).filter((branch) => branch.is_active);
 
   useEffect(() => {
     const current = readSession();
@@ -31,7 +47,19 @@ export function AppShell({ children }: { children: ReactNode }) {
     }
 
     setSession(current);
+    setBranchId(window.localStorage.getItem("tenderos.branch") ?? "");
   }, [router]);
+
+  function chooseBranch(value: string) {
+    const next = value === "all" ? "" : value;
+    setBranchId(next);
+    if (next) {
+      window.localStorage.setItem("tenderos.branch", next);
+      return;
+    }
+
+    window.localStorage.removeItem("tenderos.branch");
+  }
 
   function signOut() {
     if (session) {
@@ -74,6 +102,19 @@ export function AppShell({ children }: { children: ReactNode }) {
             <p className="truncate text-sm font-semibold">{session.business.name}</p>
             <p className="truncate text-xs text-muted-foreground">{session.user.full_name}</p>
           </div>
+          {branches.length > 0 ? (
+            <div className="hidden w-52 shrink-0 sm:block">
+              <SelectField
+                label="Sucursal"
+                value={branchId || "all"}
+                onValueChange={chooseBranch}
+                options={[
+                  { value: "all", label: "Toda la tienda" },
+                  ...branches.map((branch) => ({ value: String(branch.id), label: branch.name })),
+                ]}
+              />
+            </div>
+          ) : null}
           <Button type="button" variant="outline" onClick={signOut}>
             Salir
           </Button>
